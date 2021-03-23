@@ -1,14 +1,15 @@
 <template>
   <div>
     <span>{{ title }}</span>
+    <input type="text" />
   </div>
 </template>
 <script>
 export default {
   name: "Header",
   props: {
-    title: String
-  }
+    title: String,
+  },
 };
 </script>
 <style scoped>
