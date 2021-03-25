@@ -1,15 +1,17 @@
 <template>
   <div id="map"></div>
   <div id="list">
-    <List />
+    <List :count="count" />
+    <button @click="onClick()">search</button>
   </div>
 </template>
 <script>
 import { Loader } from "@googlemaps/js-api-loader";
+import { Client } from "@googlemaps/google-maps-services-js";
 import List from "./List.vue";
 
 const loader = new Loader({
-  apiKey: "AIzaSyCd6kNCPNNnVZnd45Es3WTY8xfzeYdhUQQ",
+  apiKey: "AIzaSyArwUk0co_Ur3wviOtN0UI9_am-dN03hEA",
   version: "weekly"
 });
 
@@ -23,13 +25,20 @@ export default {
       map: null,
       lat: 25.04,
       lng: 121.512,
+      count: 1,
     };
   },
-  mounted() {
+  created() {
     this.initMap();
+  },
+  mounted() {
     this.setMarker();
   },
   methods: {
+    onClick() {
+      this.count += 1;
+      console.log(this.count);
+    },
     initMap() {
       return loader.load().then(() => {
         this.map = new google.maps.Map(document.getElementById("map"), {

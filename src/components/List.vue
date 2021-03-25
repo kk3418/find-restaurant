@@ -1,8 +1,11 @@
 <template>
-  <span>list</span>
+  <span>{{ count }}</span>
 </template>
 <script>
 export default {
   name: 'List',
+  props: {
+    count: Number,
+  },
 };
 </script>

@@ -25,8 +25,7 @@
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1"
   },
-  "gitHooks": {
-  },
+  "gitHooks": {},
   "lint-staged": {
     "*.{js,jsx,vue}": [
       "vue-cli-service lint",
