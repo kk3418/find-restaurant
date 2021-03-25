@@ -7,7 +7,6 @@
 </template>
 <script>
 import { Loader } from "@googlemaps/js-api-loader";
-import { Client } from "@googlemaps/google-maps-services-js";
 import List from "./List.vue";
 
 const loader = new Loader({
