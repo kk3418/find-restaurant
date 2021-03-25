@@ -6,13 +6,7 @@
   </div>
 </template>
 <script>
-import { Loader } from "@googlemaps/js-api-loader";
 import List from "./List.vue";
-
-const loader = new Loader({
-  apiKey: "AIzaSyArwUk0co_Ur3wviOtN0UI9_am-dN03hEA",
-  version: "weekly"
-});
 
 export default {
   name: "Map",
@@ -27,36 +21,10 @@ export default {
       count: 1,
     };
   },
-  created() {
-    this.initMap();
-  },
-  mounted() {
-    this.setMarker();
-  },
   methods: {
     onClick() {
       this.count += 1;
       console.log(this.count);
-    },
-    initMap() {
-      return loader.load().then(() => {
-        this.map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: this.lat, lng: this.lng },
-          minZoom: 15,
-          zoom: 15,
-          maxZoom: 17,
-          fullscreenControl: false,
-          mapTypeControl: false
-        });
-      }).catch(err => console.log(err, "fail"));
-    },
-    setMarker() {
-      return loader.load().then(() => {
-        const marker = new google.maps.Marker({
-          position: { lat: this.lat, lng: this.lng },
-          map: this.map
-        });
-      }).catch(err => console.log(err, "marker fail"));
     },
   }
 };
