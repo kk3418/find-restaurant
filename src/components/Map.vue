@@ -1,5 +1,6 @@
 <template>
   <GoogleMap
+    class="map"
     api-key="AIzaSyArwUk0co_Ur3wviOtN0UI9_am-dN03hEA"
     style="width: 100%; height: 100%; top:-5vh;"
     :center="center"
@@ -55,4 +56,13 @@ export default {
   top: 15vh;
   right: 10vw;
 }
+.map::after {
+  position: absolute;
+  content: '';
+  width: 5px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  background: green;
+} /* the middle line */
 </style>
