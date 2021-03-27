@@ -1,8 +1,12 @@
 <template>
   <GoogleMap
+    ref="mapRef"
     class="map"
     api-key="AIzaSyArwUk0co_Ur3wviOtN0UI9_am-dN03hEA"
+    :libraries="[ 'places' ]"
     style="width: 100%; height: 100%; top:-5vh;"
+    :maxZoom="17"
+    :minZoom="12"
     :center="center"
     :zoom="15"
   >
@@ -14,6 +18,7 @@
   </div>
 </template>
 <script>
+import { ref } from "vue";
 import { GoogleMap, Marker } from "vue3-google-map";
 import List from "./List.vue";
 
@@ -30,12 +35,13 @@ export default {
     };
   },
   setup() {
-    // no need to use mounted outside setup, unse onMount here instead
+    // no need to use mounted outside setup, use onMount here instead
     const center = {
       lat: 25.04,
       lng: 121.512,
     };
-    return { center };
+    const mapRef = ref(null);
+    return { center, mapRef };
   },
   methods: {
     onClick() {
