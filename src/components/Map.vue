@@ -21,6 +21,7 @@
 import { ref } from "vue";
 import { GoogleMap, Marker } from "vue3-google-map";
 import List from "./List.vue";
+import { nearbySearch } from "../fetchData";
 
 export default {
   name: "Map",
@@ -45,8 +46,9 @@ export default {
   },
   methods: {
     onClick() {
-      this.count += 1;
-      console.log(this.count);
+      nearbySearch()
+        .then(res => console.log(res.data))
+        .catch(err => console.error(err, "failed QQ"));
     },
   }
 };
