@@ -13,8 +13,7 @@
     <Marker :options="{ position: center }" />
   </GoogleMap>
   <div id="list">
-    <List :count="count" />
-    <button @click="onClick()">search</button>
+    <List v-if="nearbySearchResult" :results="nearbySearchResult" />
   </div>
 </template>
 <script>
@@ -30,11 +29,6 @@ export default {
     GoogleMap,
     Marker,
   },
-  data() {
-    return {
-      count: 1,
-    };
-  },
   setup() {
     // no need to use mounted outside setup, use onMount here instead
     const center = {
@@ -44,13 +38,26 @@ export default {
     const mapRef = ref(null);
     return { center, mapRef };
   },
+  created() {
+    setTimeout(() => {
+      this.loadNearby();
+    }, 2000);
+  },
+  data() {
+    return {
+      nearbySearchResult: null,
+    };
+  },
   methods: {
-    onClick() {
+    loadNearby() {
       nearbySearch()
-        .then(res => console.log(res.data))
+        .then(({ data }) => {
+          this.nearbySearchResult = data.results;
+          console.log(data.results);
+        })
         .catch(err => console.error(err, "failed QQ"));
     },
-  }
+  },
 };
 </script>
 <style scoped>
@@ -64,13 +71,4 @@ export default {
   top: 15vh;
   right: 10vw;
 }
-.map::after {
-  position: absolute;
-  content: '';
-  width: 5px;
-  height: 100%;
-  top: 0;
-  left: 50%;
-  background: green;
-} /* the middle line */
 </style>

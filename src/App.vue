@@ -6,7 +6,8 @@
 <script>
 import Header from "./components/Header.vue";
 import Map from "./components/Map.vue";
-
+// Todo:
+// 移動center 後要能重刷
 export default {
   name: "App",
   components: {
