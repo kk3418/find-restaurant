@@ -6,11 +6,15 @@
     :libraries="[ 'places' ]"
     style="width: 100%; height: 100%; top:-5vh;"
     :maxZoom="17"
-    :minZoom="12"
+    :minZoom="15"
     :center="center"
-    :zoom="15"
+    :zoom="16"
   >
-    <Marker :options="{ position: center }" />
+    <Marker :options="{ position: center, label: 'C' }" />
+    <Marker v-if="nearbySearchResult"
+      v-for="item in nearbySearchResult"
+      :options="{ position: item.geometry.location }" 
+    />
   </GoogleMap>
   <div id="list">
     <List v-if="nearbySearchResult" :results="nearbySearchResult" />
@@ -32,16 +36,21 @@ export default {
   setup() {
     // no need to use mounted outside setup, use onMount here instead
     const center = {
-      lat: 25.04,
-      lng: 121.512,
+      lat: 25.01,
+      lng: 121.521,
     };
     const mapRef = ref(null);
+    if (mapRef) {
+      window.addEventListener('mouseup', () => {
+        console.log('move~~');
+      });
+    }
     return { center, mapRef };
   },
   created() {
     setTimeout(() => {
-      this.loadNearby();
-    }, 2000);
+      this.loadNearby(this.center);
+    }, 1000);
   },
   data() {
     return {
@@ -49,8 +58,8 @@ export default {
     };
   },
   methods: {
-    loadNearby() {
-      nearbySearch()
+    loadNearby(center) {
+      nearbySearch(center)
         .then(({ data }) => {
           this.nearbySearchResult = data.results;
           console.log(data.results);
@@ -63,8 +72,8 @@ export default {
 <style scoped>
 #list {
   position: absolute;
-  width: 20vw;
-  height: 30vh;
+  min-width: 15vw;
+  min-height: 30vh;
   z-index: 2;
   background: red;
   opacity: 0.7;
