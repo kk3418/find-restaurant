@@ -1,17 +1,15 @@
 <template>
-  <Header title="Header" />
   <Map />
 </template>
 
 <script>
-import Header from "./components/Header.vue";
 import Map from "./components/Map.vue";
 // Todo:
-// 移動center 後要能重刷
+// 1. 移動地圖，搜尋結果要能隨之變動
+// 2. 標示地圖中心的Marker 顏色跟文字顏色要能客製化
 export default {
   name: "App",
   components: {
-    Header,
     Map
   }
 };

@@ -1,28 +1,12 @@
 <template>
-  <GoogleMap
-    ref="mapRef"
-    class="map"
-    api-key="AIzaSyArwUk0co_Ur3wviOtN0UI9_am-dN03hEA"
-    :libraries="[ 'places' ]"
-    style="width: 100%; height: 100%; top:-5vh;"
-    :maxZoom="17"
-    :minZoom="15"
-    :center="center"
-    :zoom="16"
-  >
-    <Marker :options="{ position: center, label: 'C' }" />
-    <Marker v-if="nearbySearchResult"
-      v-for="item in nearbySearchResult"
-      :options="{ position: item.geometry.location }" 
-    />
-  </GoogleMap>
+  <div id="map"></div>
   <div id="list">
     <List v-if="nearbySearchResult" :results="nearbySearchResult" />
   </div>
 </template>
 <script>
 import { ref } from "vue";
-import { GoogleMap, Marker } from "vue3-google-map";
+import { GoogleMap } from "@googlemaps/map-loader";
 import List from "./List.vue";
 import { nearbySearch } from "../fetchData";
 
@@ -30,46 +14,51 @@ export default {
   name: "Map",
   components: {
     List,
-    GoogleMap,
-    Marker,
   },
-  setup() {
-    // no need to use mounted outside setup, use onMount here instead
-    const center = {
-      lat: 25.01,
-      lng: 121.521,
+  mounted() {
+    const mapOptions = {
+      center: {
+        lat: 25.01,
+        lng: 121.521,
+      },
+      zoom: 15,
     };
-    const mapRef = ref(null);
-    if (mapRef) {
-      window.addEventListener('mouseup', () => {
-        console.log('move~~');
+    const apiOptions = {
+      version: 'weekly',
+      libraries: ['places'],
+    };
+    const mapLoaderOptions = {
+      apiKey: process.env.VUE_APP_GOOGLE_KEY,
+      divId: 'map',
+      mapOptions: mapOptions,
+      apiOptions: apiOptions,
+    };
+    const mapLoader = new GoogleMap();
+    mapLoader.initMap(mapLoaderOptions)
+      .then(googleMap => {
+        // returns instance of google.maps.Map
+        nearbySearch(mapOptions.center)
+          .then(({ data }) => {
+            setTimeout(() => {
+              this.nearbySearchResult = data.results;
+            }, 500);
+          })
+          .catch(err => console.error(err, "failed QQ"));
       });
-    }
-    return { center, mapRef };
-  },
-  created() {
-    setTimeout(() => {
-      this.loadNearby(this.center);
-    }, 1000);
   },
   data() {
     return {
       nearbySearchResult: null,
     };
   },
-  methods: {
-    loadNearby(center) {
-      nearbySearch(center)
-        .then(({ data }) => {
-          this.nearbySearchResult = data.results;
-          console.log(data.results);
-        })
-        .catch(err => console.error(err, "failed QQ"));
-    },
-  },
 };
 </script>
 <style scoped>
+#map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 #list {
   position: absolute;
   min-width: 15vw;
