@@ -10,8 +10,8 @@ import Map from "./components/Map.vue";
 export default {
   name: "App",
   components: {
-    Map
-  }
+    Map,
+  },
 };
 </script>
 <style>

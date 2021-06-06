@@ -8,7 +8,7 @@ export default {
   name: "List",
   props: {
     results: Array,
-  }
+  },
 };
 </script>
 <style scoped>

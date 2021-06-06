@@ -43,7 +43,7 @@ export default {
       new window.google.maps.Marker({
         position: this.center,
         map: map,
-        title: "center"
+        title: "center",
       });
       nearbySearch(this.center).then(({ data }) => {
         this.nearbySearchResult = data.results;
