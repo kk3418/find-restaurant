@@ -8,8 +8,14 @@ export async function nearbySearch(center) {
     radius: "200",
     keyword: "restaurant",
   };
-  const respond = await axios(url, {
-    params,
-  });
-  return respond;
+  let respond;
+  try {
+    respond = await axios(url, {
+      params,
+    });
+    console.log("fetch nearbySearch");
+  } catch (error) {
+    console.error(error);
+  }
+  return respond?.data.results;
 }

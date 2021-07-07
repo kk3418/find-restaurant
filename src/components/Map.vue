@@ -1,6 +1,6 @@
 <template>
   <div ref="map" id="map"></div>
-  <div id="list" v-if="nearbySearchResult">
+  <div id="list" v-if="nearbySearchResult.length > 0">
     <List :results="nearbySearchResult" />
   </div>
 </template>
@@ -17,13 +17,18 @@ export default {
     this.initial();
   },
   data() {
+    const firstCenter =
+      window.localStorage.getItem("center") &&
+      JSON.parse(window.localStorage.getItem("center"));
     return {
-      nearbySearchResult: null,
+      nearbySearchResult: [],
       script: null,
-      center: {
+      center: firstCenter || {
         lat: 25.01,
         lng: 121.521,
       },
+      map: null,
+      markers: [],
     };
   },
   methods: {
@@ -34,37 +39,38 @@ export default {
       window.initMap = this.initMap;
       document.head.appendChild(this.script);
     },
-    initMap() {
+    setMarkerVisible(isVisible) {
+      for (let i = 0; i < this.markers.length; i++) {
+        this.markers[i].setVisible(isVisible);
+      }
+    },
+    async initMap() {
       const mapOptions = {
         center: this.center,
         zoom: 15,
       };
       const map = new window.google.maps.Map(this.$refs.map, mapOptions);
-      new window.google.maps.Marker({
+      this.map = map;
+      const firstMarker = new window.google.maps.Marker({
         position: this.center,
         map: map,
-        title: "center",
       });
-      nearbySearch(this.center).then(({ data }) => {
-        this.nearbySearchResult = data.results;
-      });
+      this.markers.push(firstMarker);
+      this.nearbySearchResult = await nearbySearch(this.center);
       map.addListener("bounds_changed", () => {
         this.center = { lat: map.center.lat(), lng: map.center.lng() };
+        window.localStorage.setItem("center", JSON.stringify(this.center));
       });
-      map.addListener("dragend", () => {
-        nearbySearch(this.center).then(({ data }) => {
-          new window.google.maps.Marker({
-            position: this.center,
-            map: map,
-            title: "center",
-          });
-          if (data.results.length === 0) {
-            this.nearbySearchResult = null;
-          } else {
-            this.nearbySearchResult = data.results;
-          }
-        });
+      map.addListener("dragend", this.handleDragend);
+    },
+    async handleDragend() {
+      this.setMarkerVisible(false);
+      const marker = new window.google.maps.Marker({
+        position: this.center,
+        map: this.map,
       });
+      this.markers.push(marker);
+      this.nearbySearchResult = await nearbySearch(this.center);
     },
   },
 };
