@@ -1,6 +1,6 @@
 <template>
   <div class="list-item" v-for="item in results" :key="item.place_id">
-    <div class="list-item-name" :data-name="item.rating">
+    <div class="list-item-name" :rating="item.rating">
       {{ item.name }}
     </div>
     <div class="is-open" v-if="item?.opening_hours?.open_now">
@@ -27,11 +27,12 @@ export default {
   line-height: 2rem;
   box-shadow: 1px 1px 2px 1px gray;
   cursor: pointer;
+  padding: 0 1vw;
 }
 .list-item-name::after {
   --scale: 0;
   display: block;
-  content: attr(data-name);
+  content: attr(rating);
   transform: scale(var(--scale));
   transform-origin: left top;
   transition: 200ms transform;
@@ -42,19 +43,17 @@ export default {
   position: absolute;
   top: 5%;
   left: 3%;
-  background-color: gray;
-  z-index: 3;
+  background-color: grey;
 }
 .list-item-name:hover::after {
   --scale: 1;
 }
 .list-item-name {
   display: block;
-  padding: 0 1vw;
   width: 100%;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .is-open {
   color: black;
