@@ -70,7 +70,11 @@ export default {
         map: this.map,
       });
       this.markers.push(marker);
-      this.nearbySearchResult = await nearbySearch(this.center);
+      try {
+        this.nearbySearchResult = (await nearbySearch(this.center)) || [];
+      } catch (error) {
+        console.error("nearbySearch error", error);
+      }
     },
   },
 };
@@ -83,14 +87,24 @@ export default {
 }
 #list {
   position: absolute;
-  width: 20vw;
+  width: 25vw;
   height: 50vh;
   z-index: 2;
   background: red;
   opacity: 0.7;
   top: 15vh;
   right: 10vw;
-  overflow-x: hide;
+  overflow-x: hidden;
   overflow-y: scroll;
+  box-shadow: 1px 2px 2px 0 black;
+  padding: 0.5vh 0;
+}
+@media (max-width: 800px) {
+  #list {
+    width: 45vw;
+    height: 45vh;
+    top: 2vh;
+    right: 1vw;
+  }
 }
 </style>

@@ -9,13 +9,9 @@ export async function nearbySearch(center) {
     keyword: "restaurant",
   };
   let respond;
-  try {
-    respond = await axios(url, {
-      params,
-    });
-    console.log("fetch nearbySearch");
-  } catch (error) {
-    console.error(error);
-  }
+  respond = await axios(url, {
+    params,
+  });
+  console.log("fetch nearbySearch");
   return respond?.data.results;
 }
