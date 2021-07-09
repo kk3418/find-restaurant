@@ -15,3 +15,16 @@ export async function nearbySearch(center) {
   console.log("fetch nearbySearch");
   return respond?.data.results;
 }
+
+export async function distanceMatrix({ origins, destinations }) {
+  const service = new window.google.maps.DistanceMatrixService();
+  console.log("distanceMatrix");
+  const { rows = [] } = await service.getDistanceMatrix({
+    origins,
+    destinations,
+    unitSystem: window.google.maps.UnitSystem.METRIC,
+    travelMode: "WALKING",
+  });
+  const { elements } = rows[0];
+  return elements?.map(v => v.distance.text);
+}

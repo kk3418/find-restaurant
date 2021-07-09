@@ -1,6 +1,6 @@
 <template>
-  <div class="list-item" v-for="item in results" :key="item.place_id">
-    <div class="list-item-name" :rating="item.rating">
+  <div class="list-item" v-for="item in nearbyItems" :key="item.place_id">
+    <div class="list-item-name" :rating="item.rating" :distance="item.distance">
       {{ item.name }}
     </div>
     <div class="is-open" v-if="item?.opening_hours?.open_now">
@@ -15,7 +15,7 @@
 export default {
   name: "List",
   props: {
-    results: Array,
+    nearbyItems: Array,
   },
 };
 </script>
@@ -32,7 +32,7 @@ export default {
 .list-item-name::after {
   --scale: 0;
   display: block;
-  content: attr(rating);
+  content: "分數：" attr(rating) " 距離：" attr(distance);
   transform: scale(var(--scale));
   transform-origin: left top;
   transition: 200ms transform;

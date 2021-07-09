@@ -1,12 +1,12 @@
 <template>
   <div ref="map" id="map"></div>
-  <div id="list" v-if="nearbySearchResult.length > 0">
-    <List :results="nearbySearchResult" />
+  <div id="list" v-if="nearbyItems.length > 0">
+    <List :nearbyItems="nearbyItems" />
   </div>
 </template>
 <script>
 import List from "./List.vue";
-import { nearbySearch } from "../fetchData";
+import { nearbySearch, distanceMatrix } from "../fetchData";
 
 export default {
   name: "Map",
@@ -21,7 +21,8 @@ export default {
       window.localStorage.getItem("center") &&
       JSON.parse(window.localStorage.getItem("center"));
     return {
-      nearbySearchResult: [],
+      nearbySearchResult: null,
+      distances: null,
       script: null,
       center: firstCenter || {
         lat: 25.01,
@@ -30,6 +31,20 @@ export default {
       map: null,
       markers: [],
     };
+  },
+  computed: {
+    nearbyItems() {
+      let result = [];
+      if (this.nearbySearchResult && this.distances) {
+        this.nearbySearchResult.forEach((item, index) => {
+          result.push({
+            ...item,
+            distance: this.distances[index],
+          });
+        });
+      }
+      return result;
+    },
   },
   methods: {
     initial() {
@@ -56,14 +71,14 @@ export default {
         map: map,
       });
       this.markers.push(firstMarker);
-      this.nearbySearchResult = await nearbySearch(this.center);
+      this.handleNearbyItems();
       map.addListener("bounds_changed", () => {
         this.center = { lat: map.center.lat(), lng: map.center.lng() };
         window.localStorage.setItem("center", JSON.stringify(this.center));
       });
-      map.addListener("dragend", this.handleDragend);
+      map.addListener("dragend", this.handleNearbyItems);
     },
-    async handleDragend() {
+    async handleNearbyItems() {
       this.setMarkerVisible(false);
       const marker = new window.google.maps.Marker({
         position: this.center,
@@ -71,9 +86,13 @@ export default {
       });
       this.markers.push(marker);
       try {
-        this.nearbySearchResult = (await nearbySearch(this.center)) || [];
+        this.nearbySearchResult = await nearbySearch(this.center);
+        this.distances = await distanceMatrix({
+          origins: [this.center],
+          destinations: this.nearbySearchResult.map(v => v.geometry.location),
+        });
       } catch (error) {
-        console.error("nearbySearch error", error);
+        console.error("handle error", error);
       }
     },
   },
