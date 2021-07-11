@@ -63,6 +63,9 @@ export default {
       const mapOptions = {
         center: this.center,
         zoom: 15,
+        zoomControl: false,
+        fullscreenMode: false,
+        mapTypeControl: false,
       };
       const map = new window.google.maps.Map(this.$refs.map, mapOptions);
       this.map = map;
@@ -120,10 +123,10 @@ export default {
 }
 @media (max-width: 800px) {
   #list {
-    width: 45vw;
-    height: 45vh;
-    top: 2vh;
-    right: 1vw;
+    width: 55vw;
+    height: 60vh;
+    top: 4vh;
+    right: 5vw;
   }
 }
 </style>

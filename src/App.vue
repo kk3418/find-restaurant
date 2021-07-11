@@ -6,7 +6,11 @@
 import Map from "./components/Map.vue";
 // Todo:
 // 1. 讓搜尋list更美觀
+//  a. 找出方法讓 list-item-name::after 顯示可以超過父層
 //  b. 在手機尺寸能夠縮小 以及顯示漢堡排按鈕
+// 2. 可以透過價格 遠近等 進行排序
+// 3. 鎖定現在位置
+// 4. 按一個鈕可以規劃路徑
 export default {
   name: "App",
   components: {
