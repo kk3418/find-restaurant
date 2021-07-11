@@ -59,7 +59,7 @@ export default {
         this.markers[i].setVisible(isVisible);
       }
     },
-    async initMap() {
+    initMap() {
       const mapOptions = {
         center: this.center,
         zoom: 15,
