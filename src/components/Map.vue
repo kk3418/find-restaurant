@@ -1,6 +1,18 @@
 <template>
   <div ref="map" id="map"></div>
-  <div id="list" v-if="nearbyItems.length > 0">
+  <div class="toggle" @click="handleToggle">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24px"
+      viewBox="0 0 24 24"
+      width="24px"
+      fill="#FFFFFF"
+    >
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z" />
+    </svg>
+  </div>
+  <div class="list expand" v-if="nearbyItems.length > 0">
     <List :nearbyItems="nearbyItems" />
   </div>
 </template>
@@ -64,7 +76,7 @@ export default {
         center: this.center,
         zoom: 15,
         zoomControl: false,
-        fullscreenMode: false,
+        fullscreenControl: false,
         mapTypeControl: false,
       };
       const map = new window.google.maps.Map(this.$refs.map, mapOptions);
@@ -98,6 +110,14 @@ export default {
         console.error("handle error", error);
       }
     },
+    handleToggle() {
+      const list = document.getElementsByClassName("list")[0].classList;
+      if (list.contains("expand")) {
+        list.remove("expand");
+      } else {
+        list.add("expand");
+      }
+    },
   },
 };
 </script>
@@ -107,7 +127,7 @@ export default {
   width: 100%;
   height: 100%;
 }
-#list {
+.list {
   position: absolute;
   width: 25vw;
   height: 50vh;
@@ -121,8 +141,28 @@ export default {
   box-shadow: 1px 2px 2px 0 black;
   padding: 0.5vh 0;
 }
+.toggle {
+  display: none;
+}
 @media (max-width: 800px) {
-  #list {
+  .toggle {
+    display: block;
+    position: absolute;
+    width: 10vw;
+    height: 3vh;
+    top: 1vh;
+    right: 5vw;
+    z-index: 3;
+    background: red;
+    opacity: 0.7;
+  }
+  div.expand {
+    transform: scale(1);
+  }
+  .list {
+    transform: scale(0);
+    transform-origin: right top;
+    transition: 200ms transform;
     width: 55vw;
     height: 60vh;
     top: 4vh;
