@@ -136,7 +136,6 @@ export default {
   opacity: 0.7;
   top: 15vh;
   right: 10vw;
-  overflow-x: hidden;
   overflow-y: scroll;
   box-shadow: 1px 2px 2px 0 black;
   padding: 0.5vh 0;
