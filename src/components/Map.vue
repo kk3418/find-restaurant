@@ -15,15 +15,20 @@
   <div class="list expand" v-if="nearbyItems.length > 0">
     <List :nearbyItems="nearbyItems" />
   </div>
+  <div v-if="nearbyItems.length > 0">
+    <InfoModal :info="nearbyItems" />
+  </div>
 </template>
 <script>
 import List from "./List.vue";
+import InfoModal from "./InfoModal";
 import { nearbySearch, distanceMatrix } from "../fetchData";
 
 export default {
   name: "Map",
   components: {
     List,
+    InfoModal,
   },
   mounted() {
     this.initial();
