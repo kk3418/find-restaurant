@@ -15,9 +15,7 @@
   <div class="list expand" v-if="nearbyItems.length > 0">
     <List :nearbyItems="nearbyItems" />
   </div>
-  <div v-if="nearbyItems.length > 0">
-    <InfoModal :info="nearbyItems" />
-  </div>
+  <InfoModal :info="nearbyItems" />
 </template>
 <script>
 import List from "./List.vue";

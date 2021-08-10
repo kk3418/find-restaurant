@@ -5,11 +5,9 @@
 </template>
 <script>
 export default {
+  name: "InfoModal",
   props: {
     info: Array,
-  },
-  mounted() {
-    this.setClick();
   },
   data() {
     return {
