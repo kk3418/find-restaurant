@@ -1,27 +1,39 @@
 <template>
-  <div class="modal" v-for="item in info" :key="item.name">
-    {{ item.name }}
+  <div
+    class="modal"
+    v-for="(item, index) in nearbyItems"
+    :key="`info-${item.place_id}`"
+    v-show="isOpen[index]"
+  >
+    <div>{{ item?.name }}</div>
+    <img :src="item?.icon" alt="icon" />
   </div>
 </template>
 <script>
 export default {
   name: "InfoModal",
   props: {
-    info: Array,
+    nearbyItems: Array,
   },
   data() {
     return {
       isOpen: [],
     };
   },
+  mounted() {
+    this.initialIsOpen();
+  },
+  unmounted() {
+    this.isOpen = [];
+  },
   methods: {
-    openMdal(index) {
-      this.isOpen[index] = !this.isOpne[index];
-    },
-    setClick() {
-      this.props.info.forEach(() => {
+    initialIsOpen() {
+      this.props?.nearbyItems.forEach(() => {
         this.isOpen.push(false);
       });
+    },
+    openMdal(index) {
+      this.isOpen[index] = !this.isOpne[index];
     },
   },
 };
