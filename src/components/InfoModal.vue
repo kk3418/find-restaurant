@@ -6,7 +6,8 @@
     v-show="isOpen[index]"
   >
     <div>{{ item?.name }}</div>
-    <img :src="item?.icon" alt="icon" />
+    <div>{{ `評價：${item.rating}` }}</div>
+    <div>{{ `地址：${item.vicinity}` }}</div>
   </div>
 </template>
 <script>
@@ -14,27 +15,7 @@ export default {
   name: "InfoModal",
   props: {
     nearbyItems: Array,
-  },
-  data() {
-    return {
-      isOpen: [],
-    };
-  },
-  mounted() {
-    this.initialIsOpen();
-  },
-  unmounted() {
-    this.isOpen = [];
-  },
-  methods: {
-    initialIsOpen() {
-      this.props?.nearbyItems.forEach(() => {
-        this.isOpen.push(false);
-      });
-    },
-    openMdal(index) {
-      this.isOpen[index] = !this.isOpne[index];
-    },
+    isOpen: Array,
   },
 };
 </script>

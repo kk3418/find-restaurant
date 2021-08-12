@@ -1,5 +1,10 @@
 <template>
-  <div class="list-item" v-for="item in nearbyItems" :key="item.place_id">
+  <div
+    class="list-item"
+    v-for="(item, index) in nearbyItems"
+    :key="item.place_id"
+    @click="openModal(index)"
+  >
     <div class="list-item-name" :rating="item.rating" :distance="item.distance">
       {{ item.name }}
     </div>
@@ -16,6 +21,28 @@ export default {
   name: "List",
   props: {
     nearbyItems: Array,
+  },
+  data() {
+    return {
+      isOpen: [],
+    };
+  },
+  mounted() {
+    this.initialIsOpen();
+  },
+  unmounted() {
+    this.isOpen = [];
+  },
+  methods: {
+    initialIsOpen() {
+      this.props?.nearbyItems.forEach(() => {
+        this.isOpen.push(false);
+      });
+    },
+    openModal(index) {
+      this.isOpen[index] = !this.isOpen[index];
+      this.$emit("updateModal", this.isOpen[index], index);
+    },
   },
 };
 </script>

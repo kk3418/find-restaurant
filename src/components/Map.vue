@@ -13,9 +13,9 @@
     </svg>
   </div>
   <div class="list expand" v-if="nearbyItems.length > 0">
-    <List :nearbyItems="nearbyItems" />
+    <List :nearbyItems="nearbyItems" @updateModal="updateModal" />
   </div>
-  <InfoModal :nearbyItems="nearbyItems" />
+  <InfoModal :nearbyItems="nearbyItems" :isOpen="isModalOpen" />
 </template>
 <script>
 import List from "./List.vue";
@@ -45,6 +45,7 @@ export default {
       },
       map: null,
       markers: [],
+      isModalOpen: [],
     };
   },
   computed: {
@@ -62,6 +63,13 @@ export default {
     },
   },
   methods: {
+    updateModal(updateItem, index) {
+      this.isModalOpen[index] = updateItem;
+      for (let i = 0; i < this.isModalOpen.length; i++) {
+        if (i === index) continue;
+        this.isModalOpen[i] = false;
+      }
+    },
     initial() {
       this.script = document.createElement("script");
       this.script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_KEY}&callback=initMap`;
