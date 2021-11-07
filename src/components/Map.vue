@@ -143,8 +143,7 @@ export default {
   width: 25vw;
   height: 50vh;
   z-index: 2;
-  background: red;
-  opacity: 0.7;
+  background: rgba(255, 0, 0, 0.8);
   top: 15vh;
   right: 10vw;
   overflow-y: scroll;
@@ -163,8 +162,7 @@ export default {
     top: 1vh;
     right: 5vw;
     z-index: 3;
-    background: red;
-    opacity: 0.7;
+    background: rgba(255, 0, 0, 0, 0.8);
   }
   div.expand {
     transform: scale(1);
