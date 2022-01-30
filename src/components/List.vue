@@ -22,6 +22,7 @@ export default {
   props: {
     nearbyItems: Array,
   },
+  emits: ["updateModal"],
   data() {
     return {
       isOpen: [],
@@ -55,6 +56,7 @@ export default {
   box-shadow: 1px 1px 2px 1px gray;
   cursor: pointer;
   padding: 0 1vw;
+  margin-bottom: 1vh;
 }
 .list-item-name::after {
   --scale: 0;

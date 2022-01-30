@@ -15,7 +15,11 @@
   <div class="list expand" v-if="nearbyItems.length > 0">
     <List :nearbyItems="nearbyItems" @updateModal="updateModal" />
   </div>
-  <InfoModal :nearbyItems="nearbyItems" :isOpen="isModalOpen" />
+  <InfoModal
+    :nearbyItems="nearbyItems"
+    @updateModal="updateModal"
+    :isOpen="isModalOpen"
+  />
 </template>
 <script>
 import List from "./List.vue";
@@ -46,6 +50,7 @@ export default {
       map: null,
       markers: [],
       isModalOpen: [],
+      ascending: true,
     };
   },
   computed: {
@@ -58,6 +63,9 @@ export default {
             distance: this.distances[index],
           });
         });
+      }
+      if (!this.ascending) {
+        return result.reserved();
       }
       return result;
     },

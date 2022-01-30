@@ -5,7 +5,7 @@ export async function nearbySearch(center) {
   const params = {
     key: process.env.VUE_APP_GOOGLE_KEY,
     location: `${center.lat},${center.lng}`,
-    radius: "200",
+    rankby: "distance",
     keyword: "restaurant",
   };
   let respond;
