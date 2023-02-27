@@ -10,6 +10,9 @@
       <span>{{ item?.name }}</span>
     </div>
     <div class="modal-item">
+      <img :src="photoSrc" alt="photo" />
+    </div>
+    <div class="modal-item">
       <span>總共評價數：</span>
       <span>{{ item?.user_ratings_total }}</span>
     </div>
@@ -19,6 +22,7 @@
   </div>
 </template>
 <script>
+import { getPhoto } from "../fetchData.js";
 export default {
   name: "InfoModal",
   props: {
@@ -26,7 +30,54 @@ export default {
     isOpen: Array,
   },
   emits: ["updateModal"],
+  data() {
+    return {
+      photoSrc: null,
+    };
+  },
+  computed: {
+    shouldFetch() {
+      return this.$props.isOpen?.some(element => element === true);
+    },
+    photo_reference() {
+      const openedItem = this.$props.isOpen?.findIndex(
+        element => element === true,
+      );
+      if (openedItem > -1) {
+        const { photos } = this.$props.nearbyItems[openedItem];
+        if (photos?.length > 0) {
+          return photos[0].photo_reference;
+        }
+      }
+      return null;
+    },
+  },
+  watch: {
+    shouldFetch(val) {
+      if (val) {
+        getPhoto({
+          photo_reference: this.photo_reference,
+          maxwidth: 200,
+          maxheight: 150,
+        })
+          .then(res => {
+            this.convertFile(res)
+              .then(data => {
+                this.photoSrc = data;
+              })
+              .catch(error => console.error(error));
+          })
+          .catch(error => console.error(error));
+      }
+    },
+  },
   methods: {
+    convertFile(file) {
+      return new Promise(resolve => {
+        // 似乎要用canvas才行
+        resolve(file);
+      });
+    },
     handleClick(index) {
       this.$emit("updateModal", false, index);
     },
@@ -51,6 +102,9 @@ export default {
 .modal-item {
   padding: 10px 0;
   width: 94%;
+}
+.modal-item img {
+  object-fit: cover;
 }
 .close-btn {
   position: absolute;

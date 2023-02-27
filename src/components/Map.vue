@@ -1,5 +1,6 @@
 <template>
   <div ref="map" id="map"></div>
+  <div class="sort" @click="handleSort"><span>sort</span></div>
   <div class="toggle" @click="handleToggle">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +66,7 @@ export default {
         });
       }
       if (!this.ascending) {
-        return result.reserved();
+        return result.reverse();
       }
       return result;
     },
@@ -129,13 +130,21 @@ export default {
         console.error("handle error", error);
       }
     },
+    handleSort() {
+      this.ascending = !this.ascending;
+    },
     handleToggle() {
-      const list = document.getElementsByClassName("list")[0].classList;
+      const list = document.querySelector(".list").classList;
       if (list.contains("expand")) {
         list.remove("expand");
       } else {
         list.add("expand");
       }
+    },
+  },
+  watch: {
+    ascending() {
+      this.handleNearbyItems();
     },
   },
 };
@@ -158,10 +167,26 @@ export default {
   box-shadow: 1px 2px 2px 0 black;
   padding: 0.5vh 0;
 }
+.sort {
+  position: absolute;
+  top: 12vh;
+  right: 11vw;
+  width: 10vw;
+  height: 3vh;
+  z-index: 3;
+  background-color: rgba(255, 0, 0, 0.8);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
 .toggle {
   display: none;
 }
 @media (max-width: 800px) {
+  .sort {
+    top: 1vh;
+    right: 16vw;
+  }
   .toggle {
     display: block;
     position: absolute;
@@ -170,7 +195,7 @@ export default {
     top: 1vh;
     right: 5vw;
     z-index: 3;
-    background: rgba(255, 0, 0, 0, 0.8);
+    background-color: rgba(255, 0, 0, 0.8);
   }
   div.expand {
     transform: scale(1);

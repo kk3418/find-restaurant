@@ -28,3 +28,19 @@ export async function distanceMatrix({ origins, destinations }) {
   const { elements } = rows[0];
   return elements?.map(v => v.distance.text);
 }
+
+export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
+  const url = "/place/photo";
+  const params = {
+    key: process.env.VUE_APP_GOOGLE_KEY,
+    photo_reference,
+    maxwidth,
+    maxheight,
+  };
+  const respond = await axios(url, {
+    maxRedirects: 0,
+    params,
+  });
+  console.log("get photo");
+  return respond.data;
+}
