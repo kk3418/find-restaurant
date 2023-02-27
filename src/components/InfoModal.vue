@@ -75,6 +75,7 @@ export default {
     convertFile(file) {
       return new Promise(resolve => {
         // 似乎要用canvas才行
+        // https://www.freakyjolly.com/convert-html-document-into-image-jpg-png-from-canvas/
         resolve(file);
       });
     },
