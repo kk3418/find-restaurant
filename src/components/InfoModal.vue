@@ -72,11 +72,16 @@ export default {
     },
   },
   methods: {
-    convertFile(file) {
+    convertFile(imageData) {
       return new Promise(resolve => {
-        // 似乎要用canvas才行
-        // https://www.freakyjolly.com/convert-html-document-into-image-jpg-png-from-canvas/
-        resolve(file);
+        const blob = new Blob([imageData], { type: "image/jpeg" });
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onload = () => {
+          // 取得轉換後的 base64 data URL
+          const imageUrl = reader.result;
+          resolve(imageUrl);
+        };
       });
     },
     handleClick(index) {
