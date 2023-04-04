@@ -17,33 +17,34 @@
   </div>
 </template>
 <script>
+import { ref, onMounted, onUnmounted } from "vue";
+
 export default {
   name: "List",
   props: {
     nearbyItems: Array,
   },
   emits: ["updateModal"],
-  data() {
-    return {
-      isOpen: [],
-    };
-  },
-  mounted() {
-    this.initialIsOpen();
-  },
-  unmounted() {
-    this.isOpen = [];
-  },
-  methods: {
-    initialIsOpen() {
-      this.props?.nearbyItems.forEach(() => {
-        this.isOpen.push(false);
+  setup(props, { emit }) {
+    const isOpen = ref([]);
+
+    const initialIsOpen = () => {
+      props.nearbyItems.forEach(() => {
+        isOpen.value.push(false);
       });
-    },
-    openModal(index) {
-      this.isOpen[index] = !this.isOpen[index];
-      this.$emit("updateModal", this.isOpen[index], index);
-    },
+    };
+
+    const openModal = index => {
+      isOpen.value[index] = !isOpen.value[index];
+      emit("updateModal", isOpen.value[index], index);
+    };
+
+    onMounted(initialIsOpen);
+    onUnmounted(() => {
+      isOpen.value = [];
+    });
+
+    return { isOpen, openModal };
   },
 };
 </script>
