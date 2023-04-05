@@ -22,57 +22,49 @@
   </div>
 </template>
 <script>
+import { defineComponent, ref, watch } from "vue";
 import { getPhoto } from "../fetchData.js";
-export default {
+
+export default defineComponent({
   name: "InfoModal",
   props: {
     nearbyItems: Array,
     isOpen: Array,
   },
   emits: ["updateModal"],
-  data() {
-    return {
-      photoSrc: null,
-    };
-  },
-  computed: {
-    shouldFetch() {
-      return this.$props.isOpen?.some(element => element === true);
-    },
-    photo_reference() {
-      const openedItem = this.$props.isOpen?.findIndex(
-        element => element === true,
-      );
-      if (openedItem > -1) {
-        const { photos } = this.$props.nearbyItems[openedItem];
-        if (photos?.length > 0) {
-          return photos[0].photo_reference;
+  setup(props, { emit }) {
+    const photoSrc = ref(null);
+    const photoReference = ref(null);
+
+    watch(
+      () => props.isOpen.some(element => element === true),
+      shouldFetch => {
+        if (shouldFetch) {
+          const openedItem = props.isOpen.findIndex(
+            element => element === true,
+          );
+          if (openedItem > -1) {
+            const { photos } = props.nearbyItems[openedItem];
+            if (photos?.length > 0) {
+              photoReference.value = photos[0].photo_reference;
+              getPhoto({
+                photo_reference: photoReference.value,
+                maxwidth: 200,
+                maxheight: 150,
+              }).then(res => {
+                convertFile(res)
+                  .then(data => {
+                    photoSrc.value = data;
+                  })
+                  .catch(error => console.error(error));
+              });
+            }
+          }
         }
-      }
-      return null;
-    },
-  },
-  watch: {
-    shouldFetch(val) {
-      if (val) {
-        getPhoto({
-          photo_reference: this.photo_reference,
-          maxwidth: 200,
-          maxheight: 150,
-        })
-          .then(res => {
-            this.convertFile(res)
-              .then(data => {
-                this.photoSrc = data;
-              })
-              .catch(error => console.error(error));
-          })
-          .catch(error => console.error(error));
-      }
-    },
-  },
-  methods: {
-    convertFile(imageData) {
+      },
+    );
+
+    function convertFile(imageData) {
       return new Promise(resolve => {
         const blob = new Blob([imageData], { type: "image/jpeg" });
         const reader = new FileReader();
@@ -83,12 +75,15 @@ export default {
           resolve(imageUrl);
         };
       });
-    },
-    handleClick(index) {
-      this.$emit("updateModal", false, index);
-    },
+    }
+
+    function handleClick(index) {
+      emit("updateModal", false, index);
+    }
+
+    return { photoSrc, handleClick };
   },
-};
+});
 </script>
 <style scoped>
 .modal {
