@@ -1,5 +1,5 @@
 <template>
-  <div ref="map" id="map"></div>
+  <div ref="myMap" id="map"></div>
   <div class="sort" @click="handleSort"><span>sort</span></div>
   <div class="toggle" @click="handleToggle">
     <svg
@@ -23,129 +23,140 @@
   />
 </template>
 <script>
+import { ref, computed, onMounted } from "vue";
 import List from "./List.vue";
 import InfoModal from "./InfoModal";
 import { nearbySearch, distanceMatrix } from "../fetchData";
 
 export default {
-  name: "Map",
-  components: {
-    List,
-    InfoModal,
-  },
-  mounted() {
-    this.initial();
-  },
-  data() {
-    const firstCenter =
-      window.localStorage.getItem("center") &&
-      JSON.parse(window.localStorage.getItem("center"));
-    return {
-      nearbySearchResult: null,
-      distances: null,
-      script: null,
-      center: firstCenter || {
-        lat: 25.01,
-        lng: 121.521,
-      },
-      map: null,
-      markers: [],
-      isModalOpen: [],
-      ascending: true,
-    };
-  },
-  computed: {
-    nearbyItems() {
+  components: { List, InfoModal },
+  setup() {
+    const nearbySearchResult = ref(null);
+    const distances = ref(null);
+    const script = ref(null);
+    const center = ref(
+      window.localStorage.getItem("center")
+        ? JSON.parse(window.localStorage.getItem("center"))
+        : { lat: 25.01, lng: 121.521 },
+    );
+    const map = ref(null);
+    const myMap = ref(null);
+    const markers = ref([]);
+    const isModalOpen = ref([]);
+    const ascending = ref(true);
+    const listExpanded = ref(true);
+
+    const nearbyItems = computed(() => {
       let result = [];
-      if (this.nearbySearchResult && this.distances) {
-        this.nearbySearchResult.forEach((item, index) => {
+      if (nearbySearchResult.value && distances.value) {
+        nearbySearchResult.value.forEach((item, index) => {
           result.push({
             ...item,
-            distance: this.distances[index],
+            distance: distances.value[index],
           });
         });
       }
-      if (!this.ascending) {
+      if (!ascending.value) {
         return result.reverse();
       }
       return result;
-    },
-  },
-  methods: {
-    updateModal(updateItem, index) {
-      this.isModalOpen[index] = updateItem;
-      for (let i = 0; i < this.isModalOpen.length; i++) {
+    });
+
+    const updateModal = (updateItem, index) => {
+      isModalOpen.value[index] = updateItem;
+      for (let i = 0; i < isModalOpen.value.length; i++) {
         if (i === index) continue;
-        this.isModalOpen[i] = false;
+        isModalOpen.value[i] = false;
       }
-    },
-    initial() {
-      this.script = document.createElement("script");
-      this.script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_KEY}&callback=initMap`;
-      this.script.async = true;
-      window.initMap = this.initMap;
-      document.head.appendChild(this.script);
-    },
-    setMarkerVisible(isVisible) {
-      for (let i = 0; i < this.markers.length; i++) {
-        this.markers[i].setVisible(isVisible);
+    };
+
+    const initial = () => {
+      script.value = document.createElement("script");
+      script.value.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_KEY}&callback=initMap`;
+      script.value.async = true;
+      window.initMap = initMap;
+      document.head.appendChild(script.value);
+    };
+
+    const setMarkerVisible = isVisible => {
+      for (let i = 0; i < markers.value.length; i++) {
+        markers.value[i].setVisible(isVisible);
       }
-    },
-    initMap() {
+    };
+
+    const initMap = () => {
       const mapOptions = {
-        center: this.center,
+        center: center.value,
         zoom: 15,
         zoomControl: false,
         fullscreenControl: false,
         mapTypeControl: false,
       };
-      const map = new window.google.maps.Map(this.$refs.map, mapOptions);
-      this.map = map;
-      const firstMarker = new window.google.maps.Marker({
-        position: this.center,
+      const googleMaps = window.google.maps;
+      const map = new googleMaps.Map(myMap.value, mapOptions);
+      map.value = map;
+      const firstMarker = new googleMaps.Marker({
+        position: center.value,
         map: map,
       });
-      this.markers.push(firstMarker);
-      this.handleNearbyItems();
+      markers.value.push(firstMarker);
+      handleNearbyItems();
       map.addListener("bounds_changed", () => {
-        this.center = { lat: map.center.lat(), lng: map.center.lng() };
-        window.localStorage.setItem("center", JSON.stringify(this.center));
+        center.value = { lat: map.center.lat(), lng: map.center.lng() };
+        window.localStorage.setItem("center", JSON.stringify(center.value));
       });
-      map.addListener("dragend", this.handleNearbyItems);
-    },
-    async handleNearbyItems() {
-      this.setMarkerVisible(false);
-      const marker = new window.google.maps.Marker({
-        position: this.center,
-        map: this.map,
+      map.addListener("dragend", handleNearbyItems);
+    };
+
+    const handleNearbyItems = async () => {
+      setMarkerVisible(false);
+      const googleMaps = window.google.maps;
+      const marker = new googleMaps.Marker({
+        position: center.value,
+        map: map.value,
       });
-      this.markers.push(marker);
+      markers.value.push(marker);
       try {
-        this.nearbySearchResult = await nearbySearch(this.center);
-        this.distances = await distanceMatrix({
-          origins: [this.center],
-          destinations: this.nearbySearchResult.map(v => v.geometry.location),
+        nearbySearchResult.value = await nearbySearch(center.value);
+        distances.value = await distanceMatrix({
+          origins: [center.value],
+          destinations: nearbySearchResult.value.map(v => v.geometry.location),
         });
       } catch (error) {
         console.error("handle error", error);
       }
-    },
-    handleSort() {
-      this.ascending = !this.ascending;
-    },
-    handleToggle() {
+    };
+
+    const handleSort = () => {
+      ascending.value = !ascending.value;
+    };
+
+    const handleToggle = () => {
+      listExpanded.value = !listExpanded.value;
       const list = document.querySelector(".list").classList;
-      if (list.contains("expand")) {
+      if (listExpanded.value) {
         list.remove("expand");
       } else {
         list.add("expand");
       }
-    },
-  },
-  watch: {
-    ascending() {
-      this.handleNearbyItems();
-    },
+    };
+
+    onMounted(() => {
+      initial();
+    });
+
+    return {
+      nearbyItems,
+      isModalOpen,
+      ascending,
+      listExpanded,
+      updateModal,
+      initial,
+      handleSort,
+      handleToggle,
+      handleNearbyItems,
+      myMap,
+    };
   },
 };
 </script>
