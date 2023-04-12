@@ -38,6 +38,7 @@ export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
     maxheight,
   };
   const respond = await axios(url, {
+    responseType: "arraybuffer",
     maxRedirects: 1,
     params,
   });
