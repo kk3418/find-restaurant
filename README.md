@@ -8,13 +8,13 @@ google maps place api + vue3.
 export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
   const url = "/place/photo";
   const params = {
-    key: process.env.VUE_APP_GOOGLE_KEY, // 👈 important
+    key: process.env.VUE_APP_GOOGLE_KEY,
     photo_reference,
     maxwidth,
     maxheight,
   };
   const respond = await axios(url, {
-    responseType: "arraybuffer", // important!!
+    responseType: "arraybuffer", // 👈 important
     maxRedirects: 1,
     params,
   });
