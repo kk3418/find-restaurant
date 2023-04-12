@@ -78,12 +78,6 @@ export default {
       document.head.appendChild(script.value);
     };
 
-    const setMarkerVisible = isVisible => {
-      for (let i = 0; i < markers.value.length; i++) {
-        markers.value[i].setVisible(isVisible);
-      }
-    };
-
     const initMap = () => {
       const mapOptions = {
         center: center.value,
@@ -105,11 +99,10 @@ export default {
         center.value = { lat: map.center.lat(), lng: map.center.lng() };
         window.localStorage.setItem("center", JSON.stringify(center.value));
       });
-      map.addListener("dragend", handleNearbyItems);
+      map.addListener("dragend", () => handleNearbyItems());
     };
 
     const handleNearbyItems = async () => {
-      setMarkerVisible(false);
       const googleMaps = window.google.maps;
       const marker = new googleMaps.Marker({
         position: center.value,
