@@ -1,24 +1,24 @@
-# learn-vue
+# find restaurant
 
-## Project setup
-```
-yarn install
-```
+## Technique
+google maps place api + vue3.
 
-### Compiles and hot-reloads for development
+### Note
 ```
-yarn serve
+export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
+  const url = "/place/photo";
+  const params = {
+    key: process.env.VUE_APP_GOOGLE_KEY, // 👈 important
+    photo_reference,
+    maxwidth,
+    maxheight,
+  };
+  const respond = await axios(url, {
+    responseType: "arraybuffer", // important!!
+    maxRedirects: 1,
+    params,
+  });
+  console.log("get photo");
+  return respond.data;
+}
 ```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

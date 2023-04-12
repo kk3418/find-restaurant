@@ -3,7 +3,7 @@
 This component displays a modal with information about nearby items. It takes the following props: 
 
 - `nearbyItems`: an array of objects representing nearby places
-- `isOpen`: an array of boolean values indicating whether a given modal is open or closed
+- `isOpen`: an boolean value indicating whether a given modal is open or closed
 
 The component iterates through `nearbyItems` and displays the following information for each item:
 - The place name
