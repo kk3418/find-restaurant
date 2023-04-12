@@ -39,7 +39,7 @@ export default {
         ? JSON.parse(window.localStorage.getItem("center"))
         : { lat: 25.01, lng: 121.521 },
     );
-    const map = ref(null);
+    const mapInstance = ref(null);
     const myMap = ref(null);
     const markers = ref([]);
     const isModalOpen = ref([]);
@@ -88,7 +88,7 @@ export default {
       };
       const googleMaps = window.google.maps;
       const map = new googleMaps.Map(myMap.value, mapOptions);
-      map.value = map;
+      mapInstance.value = map;
       const firstMarker = new googleMaps.Marker({
         position: center.value,
         map: map,
@@ -106,7 +106,7 @@ export default {
       const googleMaps = window.google.maps;
       const marker = new googleMaps.Marker({
         position: center.value,
-        map: map.value,
+        map: mapInstance.value,
       });
       markers.value.push(marker);
       try {
