@@ -29,29 +29,30 @@ export default defineComponent({
   emits: ["closeModal"],
   setup(props, { emit }) {
     const photoSrc = ref(null);
-    const photoReference = ref(null);
+
+    const fetchPhoto = async () => {
+      try {
+        const { photos } = props.nearbyItem;
+        if (photos?.length > 0) {
+          const photoReference = photos[0].photo_reference;
+          const res = await getPhoto({
+            photo_reference: photoReference,
+            maxwidth: 200,
+            maxheight: 150,
+          });
+          const data = await convertFile(res);
+          photoSrc.value = data;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     watch(
       () => props.isOpen,
-      shouldFetch => {
-        if (shouldFetch) {
-          if (props.isOpen > -1) {
-            const { photos } = props.nearbyItem;
-            if (photos?.length > 0) {
-              photoReference.value = photos[0].photo_reference;
-              getPhoto({
-                photo_reference: photoReference.value,
-                maxwidth: 200,
-                maxheight: 150,
-              }).then(res => {
-                convertFile(res)
-                  .then(data => {
-                    photoSrc.value = data;
-                  })
-                  .catch(error => console.error(error));
-              });
-            }
-          }
+      async shouldFetch => {
+        if (shouldFetch && props.isOpen > -1) {
+          await fetchPhoto();
         }
       },
     );
@@ -65,6 +66,9 @@ export default defineComponent({
           // 取得轉換後的 base64 data URL
           const imageUrl = reader.result;
           resolve(imageUrl);
+        };
+        reader.onerror = error => {
+          console.error(error);
         };
       });
     }
