@@ -1,23 +1,18 @@
 <template>
-  <div
-    class="modal"
-    v-for="(item, index) in nearbyItems"
-    :key="`info-${item.place_id}`"
-    v-show="isOpen[index]"
-  >
-    <div class="close-btn" @click="handleClick(index)">X</div>
+  <div class="modal" v-show="isOpen">
+    <div class="close-btn" @click="handleClick()">X</div>
     <div class="modal-item">
-      <span>{{ item?.name }}</span>
+      <span>{{ nearbyItem?.name }}</span>
     </div>
     <div class="modal-item">
       <img :src="photoSrc" alt="photo" />
     </div>
     <div class="modal-item">
       <span>總共評價數：</span>
-      <span>{{ item?.user_ratings_total }}</span>
+      <span>{{ nearbyItem?.user_ratings_total }}</span>
     </div>
     <div class="modal-item">
-      <span>{{ `地址：${item.vicinity}` }}</span>
+      <span>{{ `地址：${nearbyItem.vicinity}` }}</span>
     </div>
   </div>
 </template>
@@ -28,23 +23,20 @@ import { getPhoto } from "../fetchData.js";
 export default defineComponent({
   name: "InfoModal",
   props: {
-    nearbyItems: Array,
-    isOpen: Array,
+    nearbyItem: Object,
+    isOpen: Boolean,
   },
-  emits: ["updateModal"],
+  emits: ["closeModal"],
   setup(props, { emit }) {
     const photoSrc = ref(null);
     const photoReference = ref(null);
 
     watch(
-      () => props.isOpen.some(element => element === true),
+      () => props.isOpen,
       shouldFetch => {
         if (shouldFetch) {
-          const openedItem = props.isOpen.findIndex(
-            element => element === true,
-          );
-          if (openedItem > -1) {
-            const { photos } = props.nearbyItems[openedItem];
+          if (props.isOpen > -1) {
+            const { photos } = props.nearbyItem;
             if (photos?.length > 0) {
               photoReference.value = photos[0].photo_reference;
               getPhoto({
@@ -77,8 +69,8 @@ export default defineComponent({
       });
     }
 
-    function handleClick(index) {
-      emit("updateModal", false, index);
+    function handleClick() {
+      emit("closeModal", props.isOpen, !props.isOpen);
     }
 
     return { photoSrc, handleClick };

@@ -14,12 +14,14 @@
     </svg>
   </div>
   <div class="list expand" v-if="nearbyItems.length > 0">
-    <List :nearbyItems="nearbyItems" @updateModal="updateModal" />
+    <List :nearbyItems="nearbyItems" @openModal="openModal" />
   </div>
   <InfoModal
-    :nearbyItems="nearbyItems"
-    @updateModal="updateModal"
-    :isOpen="isModalOpen"
+    v-for="item in nearbyItems"
+    :key="item.place_id"
+    :nearbyItem="item"
+    @closeModal="closeModal(item.place_id)"
+    :isOpen="isModalOpen[item.place_id]"
   />
 </template>
 <script>
@@ -42,7 +44,7 @@ export default {
     const mapInstance = ref(null);
     const myMap = ref(null);
     const markers = ref([]);
-    const isModalOpen = ref([]);
+    const isModalOpen = ref({});
     const ascending = ref(true);
     const listExpanded = ref(true);
 
@@ -62,12 +64,12 @@ export default {
       return result;
     });
 
-    const updateModal = (updateItem, index) => {
-      isModalOpen.value[index] = updateItem;
-      for (let i = 0; i < isModalOpen.value.length; i++) {
-        if (i === index) continue;
-        isModalOpen.value[i] = false;
-      }
+    const openModal = item => {
+      isModalOpen.value[item.place_id] = true;
+    };
+
+    const closeModal = place_id => {
+      isModalOpen.value[place_id] = false;
     };
 
     const initial = () => {
@@ -146,11 +148,12 @@ export default {
     });
 
     return {
-      nearbyItems,
       isModalOpen,
+      nearbyItems,
       ascending,
       listExpanded,
-      updateModal,
+      openModal,
+      closeModal,
       initial,
       handleSort,
       handleToggle,

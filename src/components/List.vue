@@ -1,9 +1,9 @@
 <template>
   <div
     class="list-item"
-    v-for="(item, index) in nearbyItems"
+    v-for="item in nearbyItems"
     :key="item.place_id"
-    @click="openModal(index)"
+    @click="openModal(item)"
   >
     <div class="list-item-name" :rating="item.rating" :distance="item.distance">
       {{ item.name }}
@@ -17,34 +17,18 @@
   </div>
 </template>
 <script>
-import { ref, onMounted, onUnmounted } from "vue";
-
 export default {
   name: "List",
   props: {
     nearbyItems: Array,
   },
-  emits: ["updateModal"],
+  emits: ["openModal"],
   setup(props, { emit }) {
-    const isOpen = ref([]);
-
-    const initialIsOpen = () => {
-      props.nearbyItems.forEach(() => {
-        isOpen.value.push(false);
-      });
+    const openModal = item => {
+      emit("openModal", item);
     };
 
-    const openModal = index => {
-      isOpen.value[index] = !isOpen.value[index];
-      emit("updateModal", isOpen.value[index], index);
-    };
-
-    onMounted(initialIsOpen);
-    onUnmounted(() => {
-      isOpen.value = [];
-    });
-
-    return { isOpen, openModal };
+    return { openModal };
   },
 };
 </script>
