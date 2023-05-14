@@ -47,6 +47,7 @@ export default {
     const isModalOpen = ref({});
     const ascending = ref(true);
     const listExpanded = ref(true);
+    const activeModal = ref(null);
 
     const nearbyItems = computed(() => {
       let result = [];
@@ -65,6 +66,10 @@ export default {
     });
 
     const openModal = item => {
+      if (activeModal.value) {
+        closeModal(activeModal.value?.place_id);
+      }
+      activeModal.value = item;
       isModalOpen.value[item.place_id] = true;
     };
 
