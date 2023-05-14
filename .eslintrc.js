@@ -4,6 +4,7 @@ module.exports = {
     node: true,
   },
   plugins: ["prettier"],
+  ignorePatterns: ["cypress/**/*"],
   extends: [
     "plugin:vue/vue3-essential",
     "plugin:prettier/recommended",
