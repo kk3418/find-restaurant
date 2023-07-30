@@ -5,7 +5,7 @@
     :key="item.place_id"
     @click="openModal(item)"
   >
-    <div class="list-item-name" :rating="item.rating" :distance="item.distance">
+    <div class="list-item-name" :distance="item.distance">
       {{ item.name }}
     </div>
     <div class="is-open" v-if="item?.opening_hours?.open_now">
@@ -38,7 +38,7 @@ export default {
   font-size: 0.9rem;
   color: #fff;
   line-height: 2rem;
-  box-shadow: 1px 1px 2px 1px gray;
+  box-shadow: 0 1px 1px 1px gray;
   cursor: pointer;
   padding: 0 1vw;
   margin-bottom: 1vh;
@@ -46,7 +46,7 @@ export default {
 .list-item-name::after {
   --scale: 0;
   display: block;
-  content: "分數：" attr(rating) " 距離：" attr(distance);
+  content: " 距離：" attr(distance);
   transform: scale(var(--scale));
   transform-origin: left top;
   transition: 200ms transform;
@@ -55,8 +55,8 @@ export default {
   max-width: 55%;
   white-space: normal;
   position: absolute;
-  top: 5%;
-  left: 3%;
+  top: 0;
+  left: 0;
   background-color: grey;
 }
 .list-item-name:hover::after {

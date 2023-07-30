@@ -1,23 +1,29 @@
 <template>
-  <div class="modal" v-show="isOpen">
-    <div class="close-btn" @click="handleClick()">X</div>
-    <div class="modal-item">
+  <div class="modal">
+    <div class="close-btn" @click="handleClick()">
+      <span class="material-symbols-outlined">cancel</span>
+    </div>
+    <div class="modal-item title">
       <span>{{ nearbyItem?.name }}</span>
     </div>
-    <div class="modal-item">
+    <div class="modal-item" v-for="photoSrc in photosSrc" :key="photoSrc">
       <img :src="photoSrc" alt="photo" />
     </div>
     <div class="modal-item">
-      <span>總共評價數：</span>
-      <span>{{ nearbyItem?.user_ratings_total }}</span>
-    </div>
-    <div class="modal-item">
-      <span>{{ `地址：${nearbyItem.vicinity}` }}</span>
+      <div class="rate">{{ nearbyItem?.rating }}</div>
+      <div>
+        <span class="nowrap">總共評價數：</span>
+        <span>{{ nearbyItem?.user_ratings_total }}</span>
+      </div>
+      <div>
+        <span class="nowrap">地址：</span>
+        <span>{{ nearbyItem.vicinity }}</span>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { getPhoto } from "../fetchData.js";
 
 export default defineComponent({
@@ -28,34 +34,32 @@ export default defineComponent({
   },
   emits: ["closeModal"],
   setup(props, { emit }) {
-    const photoSrc = ref(null);
+    const photosSrc = ref([]);
 
     const fetchPhoto = async () => {
       try {
         const { photos } = props.nearbyItem;
-        if (photos?.length > 0) {
-          const photoReference = photos[0].photo_reference;
-          const res = await getPhoto({
-            photo_reference: photoReference,
-            maxwidth: 200,
-            maxheight: 150,
+        photos?.length > 0 &&
+          photos.forEach(async photo => {
+            const photoReference = photo.photo_reference;
+            const res = await getPhoto({
+              photo_reference: photoReference,
+              maxwidth: 200,
+              maxheight: 150,
+            });
+            const data = await convertFile(res);
+            photosSrc.value.push(data);
           });
-          const data = await convertFile(res);
-          photoSrc.value = data;
-        }
       } catch (error) {
         console.error(error);
       }
     };
 
-    watch(
-      () => props.isOpen,
-      async shouldFetch => {
-        if (shouldFetch && props.isOpen > -1) {
-          await fetchPhoto();
-        }
-      },
-    );
+    onMounted(async () => {
+      if (props.isOpen) {
+        await fetchPhoto();
+      }
+    });
 
     function convertFile(imageData) {
       return new Promise(resolve => {
@@ -77,14 +81,14 @@ export default defineComponent({
       emit("closeModal", props.isOpen, !props.isOpen);
     }
 
-    return { photoSrc, handleClick };
+    return { photosSrc, handleClick };
   },
 });
 </script>
 <style scoped>
 .modal {
   position: absolute;
-  padding: 3%;
+  padding: 2%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -95,18 +99,46 @@ export default defineComponent({
   z-index: 2;
   background: rgba(133, 45, 88, 0.9);
   color: white;
+  border-radius: 5%;
 }
 .modal-item {
+  display: grid;
+  place-content: center;
   padding: 10px 0;
-  width: 94%;
+  gap: 10px;
 }
 .modal-item img {
   object-fit: cover;
 }
+.modal-item .nowrap {
+  white-space: nowrap;
+}
+.title {
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: bolder;
+}
+.rate {
+  color: yellow;
+  font-weight: bold;
+  justify-self: center;
+}
 .close-btn {
   position: absolute;
   cursor: pointer;
-  top: 1vh;
-  right: 1vw;
+  top: 2vh;
+  right: 2vw;
+}
+@media (max-width: 800px) {
+  .title {
+    font-size: 1.3rem;
+  }
+  .modal {
+    width: 70vw;
+    font-size: 0.9rem;
+  }
+  .close-btn {
+    top: 1vh;
+  }
 }
 </style>

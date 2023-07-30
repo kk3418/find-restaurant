@@ -2,27 +2,22 @@
   <div ref="myMap" id="map"></div>
   <div class="sort" @click="handleSort"><span>sort</span></div>
   <div class="toggle" @click="handleToggle">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      height="24px"
-      viewBox="0 0 24 24"
-      width="24px"
-      fill="#FFFFFF"
-    >
-      <path d="M0 0h24v24H0z" fill="none" />
-      <path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z" />
-    </svg>
+    <span class="material-symbols-outlined">menu</span>
   </div>
   <div class="list expand" v-if="nearbyItems.length > 0">
     <List :nearbyItems="nearbyItems" @openModal="openModal" />
   </div>
-  <InfoModal
+  <v-dialog
     v-for="item in nearbyItems"
     :key="item.place_id"
-    :nearbyItem="item"
-    @closeModal="closeModal(item.place_id)"
-    :isOpen="isModalOpen[item.place_id]"
-  />
+    v-model="isModalOpen[item.place_id]"
+  >
+    <InfoModal
+      :nearbyItem="item"
+      @closeModal="closeModal(item.place_id)"
+      :isOpen="isModalOpen[item.place_id]"
+    />
+  </v-dialog>
 </template>
 <script>
 import { ref, computed, onMounted } from "vue";
@@ -180,10 +175,11 @@ export default {
   height: 50vh;
   z-index: 2;
   background: rgba(255, 0, 0, 0.8);
-  top: 15vh;
+  top: 16vh;
   right: 10vw;
   overflow-y: scroll;
-  box-shadow: 1px 2px 2px 0 black;
+  box-shadow: 1px 1px 1px 0 black;
+  border-radius: 3%;
   padding: 0.5vh 0;
 }
 .sort {
@@ -197,14 +193,17 @@ export default {
   cursor: pointer;
   display: grid;
   place-content: center;
+  border-radius: 12px;
 }
 .toggle {
   display: none;
+  border-radius: 6px;
 }
 @media (max-width: 800px) {
   .sort {
     top: 1vh;
     right: 16vw;
+    border-radius: 6px;
   }
   .toggle {
     display: block;
@@ -225,7 +224,7 @@ export default {
     transition: 200ms transform;
     width: 55vw;
     height: 60vh;
-    top: 4vh;
+    top: 5vh;
     right: 5vw;
   }
 }

@@ -6,7 +6,7 @@ export async function nearbySearch(center) {
     key: process.env.VUE_APP_GOOGLE_KEY,
     location: `${center.lat},${center.lng}`,
     rankby: "distance",
-    keyword: "restaurant",
+    keyword: "restaurant bar",
   };
   let respond;
   respond = await axios(url, {
