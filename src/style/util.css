@@ -11,3 +11,8 @@
   border-radius: 10px;
   background: darkgray;
 }
+
+/* vuetify */
+.v-carousel__controls {
+  display: none;
+}

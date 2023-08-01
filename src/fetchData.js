@@ -9,9 +9,7 @@ export async function nearbySearch(center) {
     keyword: "restaurant bar",
   };
   let respond;
-  respond = await axios(url, {
-    params,
-  });
+  respond = await axios(url, { params });
   console.log("fetch nearbySearch");
   return respond?.data.results;
 }
@@ -29,6 +27,19 @@ export async function distanceMatrix({ origins, destinations }) {
   return elements?.map(v => v.distance.text);
 }
 
+export async function getPlaceDetail({ placeId }) {
+  const url = "place/details/json";
+  const params = {
+    key: process.env.VUE_APP_GOOGLE_KEY,
+    place_id: placeId,
+    field: "photos",
+  };
+  let respond;
+  respond = await axios(url, { params });
+  console.log("fetch place photos");
+  return respond?.data?.result;
+}
+
 export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
   const url = "/place/photo";
   const params = {
@@ -42,6 +53,5 @@ export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
     maxRedirects: 1,
     params,
   });
-  console.log("get photo");
   return respond.data;
 }

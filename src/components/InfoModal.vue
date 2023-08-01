@@ -6,8 +6,41 @@
     <div class="modal-item title">
       <span>{{ nearbyItem?.name }}</span>
     </div>
-    <div class="modal-item" v-for="photoSrc in photosSrc" :key="photoSrc">
-      <img :src="photoSrc" alt="photo" />
+    <v-carousel
+      v-if="photosSrc?.length > 0"
+      class="modal-item"
+      show-arrows="hover"
+      delimiter-icon="square"
+      height="200"
+    >
+      <template v-slot:prev="{ props }">
+        <span
+          class="material-symbols-outlined custom-arrow prev"
+          @click="props.onClick"
+        >
+          chevron_left
+        </span>
+      </template>
+      <template v-slot:next="{ props }">
+        <span
+          class="material-symbols-outlined custom-arrow next"
+          @click="props.onClick"
+        >
+          chevron_right
+        </span>
+      </template>
+      <v-carousel-item
+        class="img-container"
+        v-for="photoSrc in photosSrc"
+        :key="photoSrc"
+      >
+        <img :src="photoSrc" alt="photo" />
+      </v-carousel-item>
+    </v-carousel>
+    <div v-else class="modal-item">
+      <span class="material-symbols-outlined custom-loading">
+        progress_activity
+      </span>
     </div>
     <div class="modal-item">
       <div class="rate">{{ nearbyItem?.rating }}</div>
@@ -24,7 +57,7 @@
 </template>
 <script>
 import { defineComponent, onMounted, ref } from "vue";
-import { getPhoto } from "../fetchData.js";
+import { getPhoto, getPlaceDetail } from "../fetchData.js";
 
 export default defineComponent({
   name: "InfoModal",
@@ -38,7 +71,9 @@ export default defineComponent({
 
     const fetchPhoto = async () => {
       try {
-        const { photos } = props.nearbyItem;
+        const { photos } = await getPlaceDetail({
+          placeId: props.nearbyItem.place_id,
+        });
         photos?.length > 0 &&
           photos.forEach(async photo => {
             const photoReference = photo.photo_reference;
@@ -107,7 +142,12 @@ export default defineComponent({
   padding: 10px 0;
   gap: 10px;
 }
+.modal-item .img-container {
+  border-radius: 2rem;
+  overflow: hidden;
+}
 .modal-item img {
+  height: 100%;
   object-fit: cover;
 }
 .modal-item .nowrap {
@@ -128,6 +168,22 @@ export default defineComponent({
   cursor: pointer;
   top: 2vh;
   right: 2vw;
+}
+.custom-arrow {
+  font-size: 2rem;
+  cursor: pointer;
+}
+.custom-loading {
+  font-size: 3rem;
+  animation: rotate 1.5s ease-in-out infinite;
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(358deg);
+  }
 }
 @media (max-width: 800px) {
   .title {
