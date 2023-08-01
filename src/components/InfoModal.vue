@@ -3,14 +3,12 @@
     <div class="close-btn" @click="handleClick()">
       <span class="material-symbols-outlined">cancel</span>
     </div>
-    <div class="modal-item title">
-      <span>{{ nearbyItem?.name }}</span>
-    </div>
+    <div class="rate">{{ nearbyItem?.rating }}</div>
+    <div class="title">{{ nearbyItem?.name }}</div>
     <v-carousel
       v-if="photosSrc?.length > 0"
       class="modal-item"
       show-arrows="hover"
-      delimiter-icon="square"
       height="200"
     >
       <template v-slot:prev="{ props }">
@@ -29,11 +27,7 @@
           chevron_right
         </span>
       </template>
-      <v-carousel-item
-        class="img-container"
-        v-for="photoSrc in photosSrc"
-        :key="photoSrc"
-      >
+      <v-carousel-item v-for="photoSrc in photosSrc" :key="photoSrc">
         <img :src="photoSrc" alt="photo" />
       </v-carousel-item>
     </v-carousel>
@@ -43,7 +37,6 @@
       </span>
     </div>
     <div class="modal-item">
-      <div class="rate">{{ nearbyItem?.rating }}</div>
       <div>
         <span class="nowrap">總共評價數：</span>
         <span>{{ nearbyItem?.user_ratings_total }}</span>
@@ -142,13 +135,11 @@ export default defineComponent({
   padding: 10px 0;
   gap: 10px;
 }
-.modal-item .img-container {
-  border-radius: 2rem;
-  overflow: hidden;
-}
 .modal-item img {
   height: 100%;
   object-fit: cover;
+  border-radius: 1rem;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.6);
 }
 .modal-item .nowrap {
   white-space: nowrap;
@@ -157,11 +148,20 @@ export default defineComponent({
   font-size: 1.5rem;
   text-align: center;
   font-weight: bolder;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: normal;
+  max-height: 5rem;
+  margin-bottom: 10px;
 }
 .rate {
   color: yellow;
   font-weight: bold;
   justify-self: center;
+  margin-left: 3rem;
+  font-size: 1.3rem;
 }
 .close-btn {
   position: absolute;
