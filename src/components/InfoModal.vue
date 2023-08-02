@@ -5,12 +5,7 @@
     </div>
     <div class="rate">{{ nearbyItem?.rating }}</div>
     <div class="title">{{ nearbyItem?.name }}</div>
-    <v-carousel
-      v-if="photosSrc?.length > 0"
-      class="modal-item"
-      show-arrows="hover"
-      height="200"
-    >
+    <v-carousel v-if="photosSrc?.length > 0" show-arrows="hover" height="200">
       <template v-slot:prev="{ props }">
         <span
           class="material-symbols-outlined custom-arrow prev"
@@ -28,7 +23,9 @@
         </span>
       </template>
       <v-carousel-item v-for="photoSrc in photosSrc" :key="photoSrc">
-        <img :src="photoSrc" alt="photo" />
+        <div class="modal-item" style="height: 100%;">
+          <img :src="photoSrc" alt="photo" />
+        </div>
       </v-carousel-item>
     </v-carousel>
     <div v-else class="modal-item">
