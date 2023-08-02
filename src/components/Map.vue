@@ -1,6 +1,10 @@
 <template>
   <div ref="myMap" id="map"></div>
-  <div class="sort" @click="handleSort"><span>sort</span></div>
+  <div class="sort" @click="handleSort">
+    <span class="material-symbols-outlined">
+      sort
+    </span>
+  </div>
   <div class="toggle" @click="handleToggle">
     <span class="material-symbols-outlined">menu</span>
   </div>
@@ -186,7 +190,7 @@ export default {
   position: absolute;
   top: 12vh;
   right: 11vw;
-  width: 10vw;
+  width: 5vw;
   height: 3vh;
   z-index: 3;
   background-color: rgba(255, 0, 0, 0.8);
@@ -201,6 +205,7 @@ export default {
 }
 @media (max-width: 800px) {
   .sort {
+    width: 10vw;
     top: 1vh;
     right: 16vw;
     border-radius: 6px;
