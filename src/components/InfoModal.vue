@@ -8,7 +8,7 @@
     <v-carousel v-if="photosSrc?.length > 0" show-arrows="hover" height="200">
       <template v-slot:prev="{ props }">
         <span
-          class="material-symbols-outlined custom-arrow prev"
+          class="material-symbols-outlined custom-arrow"
           @click="props.onClick"
         >
           chevron_left
@@ -16,7 +16,7 @@
       </template>
       <template v-slot:next="{ props }">
         <span
-          class="material-symbols-outlined custom-arrow next"
+          class="material-symbols-outlined custom-arrow"
           @click="props.onClick"
         >
           chevron_right

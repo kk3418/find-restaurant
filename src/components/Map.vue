@@ -1,15 +1,23 @@
 <template>
   <div ref="myMap" id="map"></div>
   <div class="sort" @click="handleSort">
-    <span class="material-symbols-outlined">
-      sort
+    <span v-show="ascending" class="material-symbols-outlined">
+      expand_more
+    </span>
+    <span v-show="!ascending" class="material-symbols-outlined">
+      expand_less
     </span>
   </div>
   <div class="toggle" @click="handleToggle">
     <span class="material-symbols-outlined">menu</span>
   </div>
-  <div class="list expand">
+  <div ref="myList" class="list">
     <List :nearbyItems="nearbyItems" @openModal="openModal" />
+  </div>
+  <div class="current-btn" @click="getCurrentLatLng()">
+    <span class="material-symbols-outlined">
+      point_scan
+    </span>
   </div>
   <v-dialog
     v-for="item in nearbyItems"
@@ -46,7 +54,8 @@ export default {
     const markers = ref([]);
     const isModalOpen = ref({});
     const ascending = ref(true);
-    const listExpanded = ref(true);
+    const myList = ref(null);
+    const isListExpand = ref(false);
     const activeModal = ref(null);
 
     const nearbyItems = computed(() => {
@@ -114,11 +123,6 @@ export default {
       const googleMaps = window.google.maps;
       const map = new googleMaps.Map(myMap.value, mapOptions);
       mapInstance.value = map;
-      const firstMarker = new googleMaps.Marker({
-        position: center.value,
-        map: map,
-      });
-      markers.value.push(firstMarker);
       handleNearbyItems();
       map.addListener("bounds_changed", () => {
         center.value = { lat: map.center.lat(), lng: map.center.lng() };
@@ -129,20 +133,36 @@ export default {
 
     const handleNearbyItems = async () => {
       setMarkerVisible(false);
-      const googleMaps = window.google.maps;
-      const marker = new googleMaps.Marker({
-        position: center.value,
-        map: mapInstance.value,
-      });
-      markers.value.push(marker);
       try {
         nearbySearchResult.value = await nearbySearch(center.value);
         distances.value = await distanceMatrix({
           origins: [center.value],
           destinations: nearbySearchResult.value.map(v => v.geometry.location),
         });
+        const googleMaps = window.google.maps;
+        nearbySearchResult.value.forEach(item => {
+          const marker = new googleMaps.Marker({
+            position: item.geometry.location,
+            map: mapInstance.value,
+          });
+          marker.addListener("click", () => {
+            openModal(item);
+          });
+          markers.value.push(marker);
+        });
       } catch (error) {
         console.error("handle error", error);
+      }
+    };
+
+    const getCurrentLatLng = async () => {
+      try {
+        const { location } = await useGeolocation();
+        center.value = location.value;
+        handleNearbyItems();
+        mapInstance.value.setCenter(location.value);
+      } catch (e) {
+        console.error(e);
       }
     };
 
@@ -151,13 +171,13 @@ export default {
     };
 
     const handleToggle = () => {
-      listExpanded.value = !listExpanded.value;
-      const list = document.querySelector(".list").classList;
-      if (listExpanded.value) {
+      const list = myList.value.classList;
+      if (isListExpand.value) {
         list.remove("expand");
       } else {
         list.add("expand");
       }
+      isListExpand.value = !isListExpand.value;
     };
 
     onMounted(() => {
@@ -168,14 +188,15 @@ export default {
       isModalOpen,
       nearbyItems,
       ascending,
-      listExpanded,
       openModal,
       closeModal,
       initial,
+      getCurrentLatLng,
       handleSort,
       handleToggle,
       handleNearbyItems,
       myMap,
+      myList,
     };
   },
 };
@@ -216,33 +237,52 @@ export default {
   display: none;
   position: absolute;
   width: 10vw;
-  height: 3vh;
+  height: 5vh;
   top: 1vh;
   right: 5vw;
   z-index: 3;
   background-color: rgba(255, 0, 0, 0.8);
+  place-content: center;
   border-radius: 6px;
+}
+.current-btn {
+  position: absolute;
+  width: 5vmin;
+  height: 5vmin;
+  right: 7vw;
+  bottom: 5vh;
+  z-index: 3;
+  cursor: pointer;
+  background-color: gray;
+  color: #fae2e2;
+  display: grid;
+  place-content: center;
+  border-radius: 50%;
 }
 @media (max-width: 800px) {
   .sort {
     width: 10vw;
+    height: 5vh;
     top: 1vh;
     right: 20vw;
     border-radius: 6px;
   }
   .toggle {
-    display: block;
+    display: grid;
   }
   div.expand {
     transform: scale(1);
+  }
+  .current-btn {
+    width: 12vmin;
+    height: 12vmin;
   }
   .list {
     transform: scale(0);
     transform-origin: right top;
     transition: 200ms transform;
     width: 55vw;
-    height: 60vh;
-    top: 5vh;
+    top: 6vh;
     right: 5vw;
   }
 }
