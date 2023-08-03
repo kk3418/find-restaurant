@@ -40,13 +40,19 @@
       </div>
       <div>
         <span class="nowrap">地址：</span>
-        <span>{{ nearbyItem.vicinity }}</span>
+        <a style="color: #fff;" :href="googleMapUrl" target="_blank">
+          {{ nearbyItem?.vicinity }}
+        </a>
+      </div>
+      <div>
+        <span class="nowrap">今天開店時間：</span>
+        <span>{{ openTime }}</span>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, computed } from "vue";
 import { getPhoto, getPlaceDetail } from "../fetchData.js";
 
 export default defineComponent({
@@ -58,12 +64,16 @@ export default defineComponent({
   emits: ["closeModal"],
   setup(props, { emit }) {
     const photosSrc = ref([]);
+    const googleMapUrl = ref("");
+    const weekday = ref([]);
 
     const fetchPhoto = async () => {
       try {
-        const { photos } = await getPlaceDetail({
+        const { photos, url, opening_hours } = await getPlaceDetail({
           placeId: props.nearbyItem.place_id,
         });
+        googleMapUrl.value = url;
+        weekday.value = opening_hours?.weekday_text;
         photos?.length > 0 &&
           photos.forEach(async photo => {
             const photoReference = photo.photo_reference;
@@ -106,7 +116,13 @@ export default defineComponent({
       emit("closeModal", props.isOpen, !props.isOpen);
     }
 
-    return { photosSrc, handleClick };
+    const openTime = computed(() => {
+      const text = weekday.value[new Date().getDay() - 1];
+      const splitText = text?.split(": ");
+      return splitText && splitText[1];
+    });
+
+    return { photosSrc, handleClick, googleMapUrl, openTime };
   },
 });
 </script>
