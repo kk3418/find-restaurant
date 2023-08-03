@@ -8,7 +8,7 @@
   <div class="toggle" @click="handleToggle">
     <span class="material-symbols-outlined">menu</span>
   </div>
-  <div class="list expand" v-if="nearbyItems.length > 0">
+  <div class="list expand">
     <List :nearbyItems="nearbyItems" @openModal="openModal" />
   </div>
   <v-dialog
@@ -86,8 +86,12 @@ export default {
     };
 
     const setMarkerVisible = isVisible => {
-      for (let i = 0; i < markers.value.length; i++) {
-        markers.value[i].setVisible(isVisible);
+      if (!isVisible) {
+        for (let i = 0; i < markers.value.length; i++) {
+          markers.value[i].setVisible(isVisible);
+          markers.value[i].setMap(null);
+        }
+        markers.value = [];
       }
     };
 
@@ -101,6 +105,8 @@ export default {
       const mapOptions = {
         center: center.value,
         zoom: 15,
+        minZoom: 13,
+        maxZoom: 17,
         zoomControl: false,
         fullscreenControl: false,
         mapTypeControl: false,
@@ -178,7 +184,7 @@ export default {
 #map {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(var(--vh, 1vh) * 100);
 }
 .list {
   position: absolute;
@@ -208,24 +214,24 @@ export default {
 }
 .toggle {
   display: none;
+  position: absolute;
+  width: 10vw;
+  height: 3vh;
+  top: 1vh;
+  right: 5vw;
+  z-index: 3;
+  background-color: rgba(255, 0, 0, 0.8);
   border-radius: 6px;
 }
 @media (max-width: 800px) {
   .sort {
     width: 10vw;
     top: 1vh;
-    right: 16vw;
+    right: 20vw;
     border-radius: 6px;
   }
   .toggle {
     display: block;
-    position: absolute;
-    width: 10vw;
-    height: 3vh;
-    top: 1vh;
-    right: 5vw;
-    z-index: 3;
-    background-color: rgba(255, 0, 0, 0.8);
   }
   div.expand {
     transform: scale(1);

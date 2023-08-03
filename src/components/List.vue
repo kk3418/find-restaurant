@@ -1,11 +1,12 @@
 <template>
   <div
     class="list-item"
+    :distance="item.distance"
     v-for="item in nearbyItems"
     :key="item.place_id"
     @click="openModal(item)"
   >
-    <div class="list-item-name" :distance="item.distance">
+    <div class="list-item-name">
       {{ item.name }}
     </div>
     <div class="is-open" v-if="item?.opening_hours?.open_now">
@@ -43,23 +44,25 @@ export default {
   padding: 0 1vw;
   margin-bottom: 1vh;
 }
-.list-item-name::after {
+.list-item::after {
   --scale: 0;
   display: block;
   content: " 距離：" attr(distance);
   transform: scale(var(--scale));
   transform-origin: left top;
   transition: 200ms transform;
-  padding: 2% 5%;
+  padding: 1vw;
   text-align: left;
-  max-width: 55%;
+  max-width: 65%;
   white-space: normal;
   position: absolute;
   top: 0;
   left: 0;
   background-color: grey;
+  line-height: normal;
+  border-radius: 1rem;
 }
-.list-item-name:hover::after {
+.list-item:hover::after {
   --scale: 1;
 }
 .list-item-name {
