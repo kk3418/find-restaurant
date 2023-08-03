@@ -25,6 +25,7 @@
 </template>
 <script>
 import { ref, computed, onMounted } from "vue";
+import useGeolocation from "../hooks/useGeolocation";
 import List from "./List.vue";
 import InfoModal from "./InfoModal";
 import { nearbySearch, distanceMatrix } from "../fetchData";
@@ -90,7 +91,13 @@ export default {
       }
     };
 
-    const initMap = () => {
+    const initMap = async () => {
+      try {
+        const { location } = await useGeolocation();
+        center.value = location.value;
+      } catch (e) {
+        console.error(e);
+      }
       const mapOptions = {
         center: center.value,
         zoom: 15,
