@@ -1,19 +1,21 @@
 <template>
-  <div
-    class="list-item"
-    :distance="item.distance"
-    v-for="item in nearbyItems"
-    :key="item.place_id"
-    @click="openModal(item)"
-  >
-    <div class="list-item-name">
-      {{ item.name }}
-    </div>
-    <div class="is-open" v-if="item?.opening_hours?.open_now">
-      營業中
-    </div>
-    <div class="is-close" v-else>
-      休息
+  <div class="list-item-wrapper">
+    <div
+      class="list-item"
+      :distance="item.distance"
+      v-for="item in nearbyItems"
+      :key="item.place_id"
+      @click="openModal(item)"
+    >
+      <div class="list-item-name">
+        {{ item.name }}
+      </div>
+      <div class="is-open" v-if="item?.opening_hours?.open_now">
+        營業中
+      </div>
+      <div class="is-close" v-else>
+        休息
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +36,11 @@ export default {
 };
 </script>
 <style scoped>
+.list-item-wrapper {
+  padding-top: 1vh;
+  height: 50vh;
+  overflow-y: scroll;
+}
 .list-item {
   position: relative;
   font-size: 0.9rem;

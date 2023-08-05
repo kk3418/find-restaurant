@@ -16,3 +16,7 @@
 .v-carousel__controls {
   display: none;
 }
+
+.v-btn--active {
+  background-color: rgba(149, 139, 139, 0.4);
+}

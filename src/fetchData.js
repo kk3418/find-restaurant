@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export async function nearbySearch(center) {
+export async function nearbySearch({ center, keyword }) {
   const url = "/place/nearbysearch/json";
   const params = {
     key: process.env.VUE_APP_GOOGLE_KEY,
     location: `${center.lat},${center.lng}`,
     rankby: "distance",
-    keyword: "restaurant bar",
+    keyword,
   };
   let respond;
   respond = await axios(url, { params });

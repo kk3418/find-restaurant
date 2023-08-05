@@ -12,6 +12,7 @@
     <span class="material-symbols-outlined">menu</span>
   </div>
   <div ref="myList" class="list">
+    <ToggleGroup v-model="keyword"></ToggleGroup>
     <List :nearbyItems="nearbyItems" @openModal="openModal" />
   </div>
   <div class="current-btn" @click="getCurrentLatLng()">
@@ -32,14 +33,15 @@
   </v-dialog>
 </template>
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import useGeolocation from "../hooks/useGeolocation";
 import List from "./List.vue";
 import InfoModal from "./InfoModal";
+import ToggleGroup from "./ToggleGroup.vue";
 import { nearbySearch, distanceMatrix } from "../fetchData";
 
 export default {
-  components: { List, InfoModal },
+  components: { List, InfoModal, ToggleGroup },
   setup() {
     const nearbySearchResult = ref(null);
     const distances = ref(null);
@@ -57,6 +59,7 @@ export default {
     const myList = ref(null);
     const isListExpand = ref(false);
     const activeModal = ref(null);
+    const keyword = ref("restaurant");
 
     const nearbyItems = computed(() => {
       let result = [];
@@ -134,7 +137,10 @@ export default {
     const handleNearbyItems = async () => {
       setMarkerVisible(false);
       try {
-        nearbySearchResult.value = await nearbySearch(center.value);
+        nearbySearchResult.value = await nearbySearch({
+          center: center.value,
+          keyword: keyword.value,
+        });
         distances.value = await distanceMatrix({
           origins: [center.value],
           destinations: nearbySearchResult.value.map(v => v.geometry.location),
@@ -184,6 +190,10 @@ export default {
       initial();
     });
 
+    watch(keyword, () => {
+      handleNearbyItems();
+    });
+
     return {
       isModalOpen,
       nearbyItems,
@@ -197,6 +207,7 @@ export default {
       handleNearbyItems,
       myMap,
       myList,
+      keyword,
     };
   },
 };
@@ -210,12 +221,11 @@ export default {
 .list {
   position: absolute;
   width: 25vw;
-  height: 50vh;
+  height: 55vh;
   z-index: 2;
   background: rgba(255, 0, 0, 0.8);
   top: 16vh;
   right: 10vw;
-  overflow-y: scroll;
   box-shadow: 1px 1px 1px 0 black;
   border-radius: 3%;
   padding: 0.5vh 0;
