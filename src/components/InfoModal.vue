@@ -3,7 +3,6 @@
     <div class="close-btn" @click="handleClick()">
       <span class="material-symbols-outlined">cancel</span>
     </div>
-    <div class="rate">{{ nearbyItem?.rating }}</div>
     <div class="title">{{ nearbyItem?.name }}</div>
     <v-carousel v-if="photosSrc?.length > 0" show-arrows="hover" height="200">
       <template v-slot:prev="{ props }">
@@ -33,9 +32,20 @@
         progress_activity
       </span>
     </div>
+    <div class="icons">
+      <span
+        class="material-symbols-outlined"
+        v-for="type in iconType"
+        :key="type"
+      >
+        {{ restaurantType[type]?.icon }}
+      </span>
+    </div>
     <div class="modal-item">
       <div>
-        <span class="nowrap">總共評價數：</span>
+        <span class="rate">{{ nearbyItem?.rating }}</span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span class="nowrap">評價數 - </span>
         <span>{{ nearbyItem?.user_ratings_total }}</span>
       </div>
       <div>
@@ -52,6 +62,7 @@
   </div>
 </template>
 <script>
+import { restaurantType } from "../constant/restaurant-type";
 import { defineComponent, onMounted, ref, computed } from "vue";
 import { getPhoto, getPlaceDetail } from "../fetchData.js";
 
@@ -66,12 +77,14 @@ export default defineComponent({
     const photosSrc = ref([]);
     const googleMapUrl = ref("");
     const weekday = ref([]);
+    const iconType = ref([]);
 
     const fetchPhoto = async () => {
       try {
-        const { photos, url, opening_hours } = await getPlaceDetail({
+        const { photos, url, opening_hours, types } = await getPlaceDetail({
           placeId: props.nearbyItem.place_id,
         });
+        iconType.value = types;
         googleMapUrl.value = url;
         weekday.value = opening_hours?.weekday_text;
         photos?.length > 0 &&
@@ -117,12 +130,19 @@ export default defineComponent({
     }
 
     const openTime = computed(() => {
-      const text = weekday.value[new Date().getDay() - 1];
+      const text = weekday.value[(new Date().getDay() + 6) % 7];
       const splitText = text?.split(": ");
       return splitText && splitText[1];
     });
 
-    return { photosSrc, handleClick, googleMapUrl, openTime };
+    return {
+      photosSrc,
+      handleClick,
+      googleMapUrl,
+      openTime,
+      iconType,
+      restaurantType,
+    };
   },
 });
 </script>
@@ -157,6 +177,11 @@ export default defineComponent({
 .modal-item .nowrap {
   white-space: nowrap;
 }
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 .title {
   font-size: 1.5rem;
   text-align: center;
@@ -167,14 +192,10 @@ export default defineComponent({
   overflow: hidden;
   line-height: normal;
   max-height: 5rem;
-  margin-bottom: 10px;
 }
 .rate {
   color: yellow;
   font-weight: bold;
-  justify-self: center;
-  margin-left: 3rem;
-  font-size: 1.3rem;
 }
 .close-btn {
   position: absolute;
