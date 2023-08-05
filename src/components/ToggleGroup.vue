@@ -1,26 +1,19 @@
 <template>
   <div class="group">
     <v-btn
-      :active="activeItem === 'restaurant'"
-      @click="handleSelect('restaurant')"
+      v-for="item in restaurantType"
+      :key="item.value"
+      :active="activeItem === item.value"
+      @click="handleSelect(item.value)"
     >
       <template v-slot:default>
-        <span class="material-symbols-outlined">restaurant</span>
-      </template>
-    </v-btn>
-    <v-btn :active="activeItem === 'bar'" @click="handleSelect('bar')">
-      <template v-slot:default>
-        <span class="material-symbols-outlined">local_bar</span>
-      </template>
-    </v-btn>
-    <v-btn :active="activeItem === 'cafe'" @click="handleSelect('cafe')">
-      <template v-slot:default>
-        <span class="material-symbols-outlined">local_cafe</span>
+        <span class="material-symbols-outlined">{{ item.icon }}</span>
       </template>
     </v-btn>
   </div>
 </template>
 <script>
+import { restaurantType } from "../constant/restaurant-type";
 import { ref } from "vue";
 export default {
   name: "toggle-group",
@@ -33,7 +26,7 @@ export default {
       emit("update:modelValue", item);
     };
 
-    return { activeItem, handleSelect };
+    return { activeItem, handleSelect, restaurantType };
   },
 };
 </script>
