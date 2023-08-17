@@ -1,24 +1,8 @@
 # find restaurant
 
-## Technique
-google maps place api + vue3.
-
-### Note
-```
-export async function getPhoto({ photo_reference, maxwidth, maxheight }) {
-  const url = "/place/photo";
-  const params = {
-    key: process.env.VUE_APP_GOOGLE_KEY,
-    photo_reference,
-    maxwidth,
-    maxheight,
-  };
-  const respond = await axios(url, {
-    responseType: "arraybuffer", // 👈 important
-    maxRedirects: 1,
-    params,
-  });
-  console.log("get photo");
-  return respond.data;
-}
-```
+### Demo
+https://find-restaurant-sideproject.netlify.app
+### 技術
+Google Map + Google Place Api + Vue
+### 用途
+基於Google Map API開發，專注於探索身邊的美食，透過簡單的按鈕，可以輕鬆地在不同的模式中切換，找到附近的餐廳、酒吧和咖啡廳。
