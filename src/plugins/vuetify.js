@@ -1,7 +1,7 @@
 import { createVuetify } from "vuetify";
-import { VDialog } from "vuetify/lib/components/VDialog";
-import { VCarousel, VCarouselItem } from "vuetify/lib/components/VCarousel";
-import { VBtn } from "vuetify/lib/components/VBtn";
+import { VDialog } from "vuetify/components/VDialog";
+import { VCarousel, VCarouselItem } from "vuetify/components/VCarousel";
+import { VBtn } from "vuetify/components/VBtn";
 
 export default createVuetify({
   aliases: {
