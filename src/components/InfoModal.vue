@@ -54,7 +54,7 @@
           {{ nearbyItem?.vicinity }}
         </a>
       </div>
-      <div>
+      <div :class="{ 'not-open': !openNow }">
         <span class="nowrap">今天開店時間：</span>
         <span>{{ openTime }}</span>
       </div>
@@ -78,8 +78,9 @@ export default defineComponent({
     const googleMapUrl = ref("");
     const weekday = ref([]);
     const iconType = ref([]);
+    const openNow = ref(true);
 
-    const fetchPhoto = async () => {
+    const fetchPlace = async () => {
       try {
         const { photos, url, opening_hours, types } = await getPlaceDetail({
           placeId: props.nearbyItem.place_id,
@@ -87,6 +88,7 @@ export default defineComponent({
         iconType.value = types;
         googleMapUrl.value = url;
         weekday.value = opening_hours?.weekday_text;
+        openNow.value = opening_hours?.open_now;
         photos?.length > 0 &&
           photos.forEach(async photo => {
             const photoReference = photo.photo_reference;
@@ -105,7 +107,7 @@ export default defineComponent({
 
     onMounted(async () => {
       if (props.isOpen) {
-        await fetchPhoto();
+        await fetchPlace();
       }
     });
 
@@ -140,6 +142,7 @@ export default defineComponent({
       handleClick,
       googleMapUrl,
       openTime,
+      openNow,
       iconType,
       restaurantType,
     };
@@ -147,6 +150,9 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.not-open {
+  color: red;
+}
 .modal {
   position: absolute;
   padding: 2%;
